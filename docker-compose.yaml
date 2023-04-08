@@ -1,0 +1,34 @@
+version: '3.5'
+
+services:
+  postgres:
+    container_name: postgres_container
+    image: clkao/postgres-plv8 #postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      PGDATA: /data/postgres
+    volumes:
+      - postgres:/data/postgres
+    ports:
+      - '5432:5432'
+    networks:
+      - postgres
+    restart: unless-stopped
+
+  nats:
+    image: "nats:latest"
+    expose:
+      - "4222"
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+    networks:
+      - postgres
+    hostname: nats-server
+networks:
+  postgres:
+    driver: bridge
+
+volumes:
+  postgres:

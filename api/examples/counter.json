@@ -1,0 +1,26 @@
+{
+  "definition":{
+    "machine_type": "infinite_counter",
+    "initial_state": "stopped",
+    "documentation": "This is a simple counter machine. It can be incremented, decremented, reset, and stopped. It can also be started again.",
+    "context": {
+      "count": 0
+    },
+    "states":[
+      { "name":"active", 
+      "on":[
+        {"message":"INC", "actions":[{"actor":"system.context.builder", "action":"increment", "args":{"path":"count"}}]},
+        {"message":"DEC", "actions":[{"actor":"system.context.builder", "action":"decrement", "args":{"path":"count"}}]},
+        {"message":"STOP", "target":"stopped"},
+        {"message":"RESET", "actions":[{"actor":"system.context.builder", "action":"reset", "args":{"path":"count"}}]},
+        {"message":"SET", "actions":[{"actor":"system.context.builder", "action":"set", "args":{"path":"count"}}]},
+        {"message":"DEC", "actions":[{"actor":"system.context.builder", "action":"decrement", "args":{}}]}
+      ],
+      "entry_action":{},
+      "exit_action":{}
+      },
+      { "name":"stopped", "on":[{"message":"START", "target":"active"}]}
+    ]
+
+  }
+}
