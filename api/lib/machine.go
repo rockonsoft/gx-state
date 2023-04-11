@@ -34,12 +34,9 @@ type MachineDefinition struct {
 	States        []MachineState             `json:"states"`
 }
 
-type MachineDefinitionRequest struct {
-	Definition MachineDefinition `json:"definition"`
-}
-
-type MachineDefinitionResponse struct {
-	Success    bool              `json:"success"`
-	Error      string            `json:"error"`
-	Definition MachineDefinition `json:"definition"`
+type Machine struct {
+	Id               int64                      `json:"id"`
+	TypeName         string                     `json:"machine_type"`
+	CurrentStateName string                     `json:"current_state_name"`
+	Context          map[string]json.RawMessage `json:"context"`
 }
