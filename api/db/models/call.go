@@ -15,17 +15,26 @@ type RemoteCall struct {
 	Args           map[string]json.RawMessage `pg:"args"`
 	Result         map[string]json.RawMessage `pg:"result"`
 	ProcessedState string                     `pg:"processed_state"`
+	MachineId      int64                      `pg:"machine_id"`
 }
 
-func SaveCall(db *pg.DB, call lib.ActorCall) error {
+func CreateCall(db *pg.DB, call lib.ActorCall) error {
 	callModel := &RemoteCall{
 		Actor:          call.ActorName,
 		Action:         call.Action,
 		ProcessedState: lib.New.String(),
 		Args:           call.Args,
+		MachineId:      call.MachineId,
 	}
 	_, err := db.Model(callModel).Insert()
 	//TODO: think about the return value
+	return err
+}
+
+func (r *RemoteCall) UpdateResult(db *pg.DB, result map[string]json.RawMessage) error {
+	r.Result = result
+	r.ProcessedState = lib.Processed.String()
+	_, err := db.Model(r).WherePK().Update()
 	return err
 }
 
