@@ -29,12 +29,13 @@ func (actor *Actor) RunCall() error {
 	return actor.Call.(func(db *pg.DB) error)(actor.db)
 }
 
-func (actor *Actor) SaveCall(action string, args map[string]json.RawMessage) (*ActionResult, error) {
+func (actor *Actor) SaveCall(machine *lib.Machine, action string, args map[string]json.RawMessage) (*ActionResult, error) {
 	actionCall := lib.ActorCall{
 		ActorName: actor.Name,
 		Action:    action,
 		Args:      args,
+		MachineId: machine.Id,
 	}
-	models.SaveCall(actor.db, actionCall)
+	models.CreateCall(actor.db, actionCall)
 	return nil, nil
 }

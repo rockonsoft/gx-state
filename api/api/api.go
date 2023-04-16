@@ -46,7 +46,7 @@ func StartAPI(pgdb *pg.DB, service *machine.MachineService) *chi.Mux {
 	r.Route("/api/machine", func(r chi.Router) {
 		r.Post("/", createPersistedMachineInstance)
 		// r.Get("/", getMachineDefs)
-		// r.Get("/{machineDefID}", getMachineDefID)
+		r.Get("/{machineID}", getMachineByID)
 		// r.Put("/{machineDefID}", updateMachineDefID)
 		// r.Delete("/{machineDefID}", deleteMachineDefID)
 	})

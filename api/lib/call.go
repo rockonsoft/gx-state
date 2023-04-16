@@ -6,4 +6,5 @@ type ActorCall struct {
 	ActorName string                     `json:"actor_name"`
 	Action    string                     `json:"action"`
 	Args      map[string]json.RawMessage `json:"args"`
+	MachineId int64                      `json:"machine_id"`
 }

@@ -87,12 +87,18 @@ func (service *MachineService) NotifyActor(machine *lib.Machine, actor string, a
 	for _, a := range service.actors {
 		if actor == a.Name {
 			found = true
-			a.Actor.SaveCall(action, args)
-			a.Actor.RunCall()
+			_, err := a.Actor.SaveCall(machine, action, args)
+			if err != nil {
+				return err
+			}
+			err = a.Actor.RunCall()
+			if err != nil {
+				return err
+			}
 		}
 	}
 	if !found {
-		return errors.New(fmt.Sprintf("Actor:%s not registred", actor))
+		return errors.New(fmt.Sprintf("Actor:%s not registered", actor))
 	}
 	return nil
 }

@@ -57,7 +57,6 @@ func getMachineDefsByTyneName(w http.ResponseWriter, r *http.Request) {
 	//alternatively you could use a URL query
 
 	machineTypeName := chi.URLParam(r, "machineName")
-	fmt.Println(fmt.Sprintf("machineTypeName: %s", machineTypeName))
 
 	// req := &lib.MachineDefinitionRequest{}
 	// err := json.NewDecoder(r.Body).Decode(req)
