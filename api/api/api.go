@@ -9,10 +9,11 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
 	"github.com/go-pg/pg/v10"
+	"rockonsoft.com/gx-state-api/machine"
 )
 
 // start api with the pgdb and return a chi router
-func StartAPI(pgdb *pg.DB) *chi.Mux {
+func StartAPI(pgdb *pg.DB, service *machine.MachineService) *chi.Mux {
 	//get the router
 	r := chi.NewRouter()
 	//add middleware
@@ -24,6 +25,7 @@ func StartAPI(pgdb *pg.DB) *chi.Mux {
 	r.Use(render.SetContentType(render.ContentTypeJSON))
 
 	r.Use(middleware.Logger, middleware.WithValue("DB", pgdb))
+	r.Use(middleware.Logger, middleware.WithValue("Service", service))
 
 	// r.Get("/articles/{slug}", getArticle)
 	// r.Get("/machines/{slug}", getMachine)

@@ -6,6 +6,7 @@ import (
 
 	"rockonsoft.com/gx-state-api/db/models"
 	"rockonsoft.com/gx-state-api/lib"
+	"rockonsoft.com/gx-state-api/machine"
 
 	"github.com/go-pg/pg/v10"
 )
@@ -35,6 +36,24 @@ func createMessage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	succMessageResponse(message, w)
+	service, ok := r.Context().Value("Service").(*machine.MachineService)
+	if !ok {
+		handleDBFromContextErr(w)
+		return
+	}
 
+	//get the intended machine and let it process the message
+	machineModel, err := models.GetMachineInstanceById(pgdb, message.To)
+	if err != nil {
+		handleMachineErr(w, err)
+		return
+	}
+
+	err = service.PostMessage(message, machineModel)
+	if err != nil {
+		handleMachineErr(w, err)
+		return
+	}
+
+	succMessageResponse(message, w)
 }

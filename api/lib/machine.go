@@ -39,4 +39,7 @@ type Machine struct {
 	TypeName         string                     `json:"machine_type"`
 	CurrentStateName string                     `json:"current_state_name"`
 	Context          map[string]json.RawMessage `json:"context"`
+	States           []MachineState             `json:"states"`
+	CurrentState     MachineState               `json:"current_state"`
+	EventHistory     []Message                  `json:"event_history"`
 }
