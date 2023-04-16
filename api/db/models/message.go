@@ -55,3 +55,20 @@ func CreateMessage(db *pg.DB, message *lib.MessageRequest) (*lib.Message, error)
 		Args:           m.Args,
 	}, nil
 }
+
+func UpdateMessageComplete(db *pg.DB, message *lib.Message) (*lib.Message, error) {
+	msgModel := &MessageModel{
+		Id: message.Id,
+	}
+	err := db.Model(msgModel).WherePK().Select()
+	if err != nil {
+		return nil, err
+	}
+	msgModel.ProcessedState = lib.Processed.String()
+	msgModel.Updated = time.Now()
+	_, err = db.Model(msgModel).WherePK().Update()
+	if err != nil {
+		return nil, err
+	}
+	return message, nil
+}

@@ -8,6 +8,7 @@ import (
 
 	"rockonsoft.com/gx-state-api/api"
 	"rockonsoft.com/gx-state-api/db"
+	"rockonsoft.com/gx-state-api/machine"
 )
 
 func main() {
@@ -19,8 +20,13 @@ func main() {
 		panic("error starting the database")
 
 	}
+	//start the machine service
+
+	machineService := machine.StartMachineService(pgdb)
+	defer machineService.Close()
+
 	//get the router of the API by passing the db
-	router := api.StartAPI(pgdb)
+	router := api.StartAPI(pgdb, machineService)
 	//get the port from the environment variable
 	port := os.Getenv("PORT")
 	if port == "" {

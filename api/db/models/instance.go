@@ -2,6 +2,7 @@ package models
 
 import (
 	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/go-pg/pg/v10"
@@ -37,11 +38,75 @@ func CreateMachineInstance(db *pg.DB, machineDef *lib.MachineDefinition) (*lib.M
 	if err != nil {
 		return nil, err
 	}
+
+	var currentState lib.MachineState
+	for _, state := range machineDef.States {
+		if state.Name == machineModel.CurrentStateName {
+			currentState = state
+		}
+	}
 	machine := &lib.Machine{
 		Id:               machineModel.Id,
 		TypeName:         machineModel.TypeName,
 		CurrentStateName: machineModel.CurrentStateName,
 		Context:          machineModel.Context,
+		CurrentState:     currentState,
 	}
 	return machine, nil
+}
+
+func UpdateMachineInstance(db *pg.DB, machine *lib.Machine) (*lib.Machine, error) {
+	machineModel := &MachineModel{
+		Id: machine.Id,
+	}
+	err := db.Model(machineModel).WherePK().Select()
+	if err != nil {
+		return nil, err
+	}
+	machineModel.CurrentStateName = machine.CurrentStateName
+	machineModel.Context = machine.Context
+	machineModel.Updated = time.Now()
+
+	_, err = db.Model(machineModel).WherePK().Update()
+	if err != nil {
+		return nil, err
+	}
+
+	return machine, nil
+}
+
+func GetMachineInstanceById(db *pg.DB, id int64) (*lib.Machine, error) {
+	fmt.Sprintln(fmt.Sprintf("Fetching machine instance with id %d", id))
+	machineModel := &MachineModel{
+		Id: id,
+	}
+	err := db.Model(machineModel).WherePK().Select()
+	if err != nil {
+		return nil, err
+	}
+
+	//TODO: get the machine definition from the the column definition of the machine instance
+	machineDef, err := GetMachineDefinitionByName(db, machineModel.TypeName)
+	if err != nil {
+		return nil, err
+	}
+
+	var currentState lib.MachineState
+	for _, state := range machineDef.States {
+		if state.Name == machineModel.CurrentStateName {
+			currentState = state
+		}
+	}
+	machine := &lib.Machine{
+		Id:               machineModel.Id,
+		TypeName:         machineModel.TypeName,
+		CurrentStateName: machineModel.CurrentStateName,
+		Context:          machineModel.Context,
+		CurrentState:     currentState,
+		States:           machineDef.States,
+	}
+	//get the states
+
+	return machine, nil
+
 }
